@@ -52,3 +52,10 @@ factory.build = function (name) {
 
   return Factory;
 };
+
+factory.config = function (userConfig) {
+  var config = require("./config");
+  for (var key in userConfig) {
+    config[key] = userConfig[key];
+  }
+};
