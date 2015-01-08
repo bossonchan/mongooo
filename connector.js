@@ -45,20 +45,21 @@ Connector.prototype.getAggregatePipeline = function () {
 };
 
 Connector.prototype.read = function (callback) {
+  var self = this;
   if (this.flag.multi) {
     if (this.isAggregateQuery()) {
       this.collection.aggregate(this.getAggregatePipeline(), function (error, docs) {
         if (error) return callback(error);
-        callback(null, docs || []);
+        callback(null, docs || [], self);
       });
     } else {
       this.collection.find(this.flag.query, this.flag.options, function (error, docs) {
         if (error) return callback(error);
-        callback(null, docs || []);
+        callback(null, docs || [], self);
       });
     }
   } else {
-    var temp = this.cache.getCacheByFlag(this.flag), self = this;
+    var temp = this.cache.getCacheByFlag(this.flag);
     if (temp) {
       process.nextTick(function () { callback(null, temp); });
     } else {
@@ -67,13 +68,13 @@ Connector.prototype.read = function (callback) {
           if (error || !docs || !docs[0]) return callback(error);
           var doc = docs[0];
           self.cache.setCacheById(doc);
-          callback(error, doc);
+          callback(error, doc, self);
         });
       } else {
         this.collection.findOne(this.flag.query, this.flag.options, function (error, doc) {
           if (error || !doc) return callback(error, doc);
           self.cache.setCacheById(doc);
-          callback(error, doc);
+          callback(error, doc, self);
         });
       }
     }

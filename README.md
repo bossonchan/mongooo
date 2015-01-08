@@ -40,3 +40,8 @@ users.getOne("uid-1").acceptFriend( users.getOne("uid-2"), callabck );
 users.getOne("uid-1").remove(callback);
 users.getList({ _id: {$in: []} }).remove(callback);
 ```
+
+## TODO
+
+1. 插件机制
+2. 性能，缓存优化

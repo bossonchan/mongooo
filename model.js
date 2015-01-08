@@ -21,8 +21,8 @@ Model.getList = function (query, options, callback) {
 Model.create = function (data, callback) {
   if (!data._id) data._id = this.generateId();
   var instance = new (this)(data._id);
-  this.connector.create(data, function (error) {
-    callback && callback(error, instance);
+  this.connector.create(data, function (error, doc) {
+    callback && callback(error, instance, doc);
   });
   return instance;
 };
