@@ -1,7 +1,7 @@
 var MongoClient = require("mongodb").MongoClient;
 var config = require("./config");
 var async  = require("async");
-var client  = null;
+var client = null;
 
 function connectToDatabase(callback) {
   if (client) {
@@ -12,33 +12,32 @@ function connectToDatabase(callback) {
     MongoClient.connect(config.mongodb.url, function (error, mongoClient) {
       if (error) throw error;
       client = mongoClient.db(config.mongodb.db);
-      loadCollections(client);
-      createIndexes(client, function () {
-        callback(client);
-      });
+      callback(client);
     });
   }
 }
 
-function loadCollections(client) {
-  config.collections.forEach(function (collection) {
-    client[collection] = client.collection(collection);
+function createIndex(collection, index, callback) {
+  if (!index || !index.field) return callback();
+  if (index.type) {
+    collection.ensureIndex(index.field, index.type, callback);
+  } else {
+    collection.ensureIndex(index.field, callback);
+  }
+}
+
+function loadCollection(client, name, index, callback) {
+  var collection = client[name];
+  if (collection) return callback(collection);
+  collection = client[name] = client.collection(name);
+  createIndex(collection, index, function () {
+    callback(collection);
   });
 }
 
-function createIndexes(client, callback) {
-  async.eachSeries(config.indexes, function (index, next) {
-    if (index.type) {
-      client[index.collection].ensureIndex(index.field, index.type, next);
-    } else {
-      client[index.collection].ensureIndex(index.field, next);
-    }
-  }, callback);
-}
-
 exports.getConnection = connectToDatabase;
-
-exports.getCollection = function (name) {
+exports.createIndex   = createIndex;
+exports.getCollection = function (name, index) {
   var collection = {};
   collection.name = name;
   ["mapReduce", "distinct", "aggregate", "count", "insert", "save", "findOne", "update", "findAndModify", "remove"].forEach(function (method) {
@@ -46,8 +45,9 @@ exports.getCollection = function (name) {
       return function () {
         var args = arguments;
         connectToDatabase(function (db) {
-          var collection = db[name];
-          collection[method].apply(collection, args);
+          loadCollection(db, name, index, function (collection) {
+            collection[method].apply(collection, args);
+          });
         });
       };
     })(method);
@@ -63,3 +63,4 @@ exports.getCollection = function (name) {
 
   return collection;
 };
+

@@ -4,6 +4,10 @@ module.exports = Model;
 
 function Model() { }
 
+Model.index = function(index) {
+  this.connector.index(index);
+}
+
 Model.getOne = function (query, options, callback) {
   if (typeof options === "function") callback = options, options = {};
   var instance = new (this)(query, options, false);

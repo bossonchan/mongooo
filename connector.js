@@ -14,6 +14,10 @@ function Connector(collection) {
   };
 }
 
+Connector.index = function(index) {
+  database.createIndex(this.collection, index, function () {});
+};
+
 Connector.prototype.setFlag = function (flag) {
   this.flag.query   = flag.query || {};
   this.flag.options = flag.options || {};
