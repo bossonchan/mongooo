@@ -14,6 +14,9 @@ describe("test -- factory", function () {
     Users.should.have.property("create");
     Users.should.have.property("destroy");
     Users.should.have.property("connector");
+    Users.should.have.property("index");
+
+    Users.index({ field: "name", type: { unique: true }});
 
     var user = Users.getOne({});
 

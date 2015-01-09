@@ -36,7 +36,6 @@ function loadCollection(client, name, index, callback) {
 }
 
 exports.getConnection = connectToDatabase;
-exports.createIndex   = createIndex;
 exports.getCollection = function (name, index) {
   var collection = {};
   collection.name = name;
@@ -56,8 +55,17 @@ exports.getCollection = function (name, index) {
   // rewrite `find` method
   collection.find = function (query, options, callback) {
     connectToDatabase(function (db) {
-      var collection = db[name];
-      collection.find(query, options).toArray(callback);
+      loadCollection(db, name, index, function (collection) {
+        collection.find(query, options).toArray(callback);
+      });
+    });
+  };
+
+  collection.createIndex = function (index) {
+    connectToDatabase(function (db) {
+      loadCollection(db, name, index, function (collection) {
+        createIndex(collection, index, function () {});
+      });
     });
   };
 

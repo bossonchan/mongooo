@@ -14,8 +14,8 @@ function Connector(collection) {
   };
 }
 
-Connector.index = function(index) {
-  database.createIndex(this.collection, index, function () {});
+Connector.prototype.index = function(index) {
+  this.collection.createIndex(index);
 };
 
 Connector.prototype.setFlag = function (flag) {
