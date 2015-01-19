@@ -56,6 +56,8 @@ factory.build = function (name) {
 factory.config = function (userConfig) {
   var config = require("./config");
   for (var key in userConfig) {
-    config[key] = userConfig[key];
+    if (userConfig.hasOwnProperty(key) && config.hasOwnProperty(key)) { // 覆盖默认配置
+      config[key] = userConfig[key];
+    }
   }
 };
