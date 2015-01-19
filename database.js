@@ -4,17 +4,17 @@ var async  = require("async");
 var client = null;
 
 function connectToDatabase(callback) {
-  if (client) {
-    process.nextTick(function () {
+  process.nextTick(function () {
+    if (client) {
       callback(client);
-    });
-  } else {
-    MongoClient.connect(config.mongodb.url, function (error, mongoClient) {
-      if (error) throw error;
-      client = mongoClient.db(config.mongodb.db);
-      callback(client);
-    });
-  }
+    } else {
+      MongoClient.connect(config.mongodb.url, function (error, mongoClient) {
+        if (error) throw error;
+        client = mongoClient.db(config.mongodb.db);
+        callback(client);
+      });
+    }
+  });
 }
 
 function createIndex(collection, index, callback) {
