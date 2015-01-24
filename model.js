@@ -47,7 +47,10 @@ Model.mapReduce = function (map, reduce, options, callback) {
 /*============= proto =============*/
 
 Model.prototype.retrieve = function (callback) {
-  this.connector.read(callback);
+  var self = this;
+  this.connector.read(function(error, docs) {
+    callback(error, docs, self)
+  });
 };
 
 Model.prototype.update = function (update, callback) {

@@ -4,6 +4,7 @@ var should = require("should");
 describe("test -- connector", function () {
 
   var connector = new Connector("messages");
+  connector.index({ "field": { "loc": "2d" } });
 
   it("should perform all methods correctly", function (done) {
     connector.should.have.property("collection");
